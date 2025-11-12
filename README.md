@@ -18,8 +18,9 @@ O projeto está totalmente funcional e disponível publicamente para exploraçã
 Os dados utilizados neste projeto são de acesso público e foram obtidos diretamente da pesquisa agrícola brasileira:
 
 * **Fonte Principal:** EMBRAPA - Repositório de Dados de Pesquisa (REDAPE).
-* **Referência Específica:** ( https://www.redape.dados.embrapa.br/file.xhtml?fileId=5772&datasetVersionId=556 )
-    *(A análise foi focada nas variáveis climáticas e de rendimento presentes neste dataset.)*
+* **Referência Específica:** (https://www.redape.dados.embrapa.br/file.xhtml?fileId=5772&datasetVersionId=556)
+
+  *(A análise foi focada nas variáveis climáticas e de rendimento presentes neste dataset.)*
 
 ---
 
