@@ -11,14 +11,12 @@ import pandas as pd
 import streamlit as st
 import plotly.express as px
 
-# =======================
-# CONFIGURAÇÃO INICIAL
-# =======================
-st.set_page_config(layout="wide", page_title="GeoAgro - Dashboard Interativo", page_icon="🌾")
+st.set_page_config(
+    layout="wide",
+    page_title="GeoAgro - Dashboard Interativo",
+    page_icon="🌾"
+)
 
-# =======================
-# LEITURA DOS DADOS
-# =======================
 df = pd.read_csv("dados.csv")
 
 colunas_novas = {
@@ -44,10 +42,8 @@ def classificar_regiao(latitude):
 
 df['regiao_geo'] = df['latitude'].apply(classificar_regiao)
 
-# =======================
-# LAYOUT E FILTROS
-# =======================
 st.title("🌾 GeoAgro Dashboard - Análise de Risco Climático da Soja no Paraná")
+st.markdown("Análise interativa relacionando **redução de chuvas** e **queda de produtividade** em diferentes regiões do estado.")
 
 st.sidebar.header("🎯 Filtros de Visualização")
 regioes = sorted(df['regiao_geo'].unique())
@@ -57,9 +53,6 @@ df_filtrado = df[df['regiao_geo'] == regiao_selecionada]
 
 st.markdown(f"### Região Selecionada: **{regiao_selecionada}**")
 
-# =======================
-# MAPA INTERATIVO
-# =======================
 fig = px.scatter_mapbox(
     df_filtrado,
     lat='latitude',
@@ -74,21 +67,56 @@ fig = px.scatter_mapbox(
     },
     color_continuous_scale=px.colors.sequential.Reds,
     zoom=6,
-    height=600
+    height=550
 )
-fig.update_layout(mapbox_style='open-street-map', margin={'r':0,'t':0,'l':0,'b':0})
+fig.update_layout(
+    mapbox_style='open-street-map',
+    margin={'r':0,'t':0,'l':0,'b':0}
+)
 st.plotly_chart(fig, use_container_width=True)
 
-# =======================
-# TABELA RESUMIDA
-# =======================
 st.markdown("#### 📊 Ranking dos Municípios - Queda de Rendimento (%)")
-tabela_resumo = df_filtrado[['municipio', 'rendimento_kg_ha', 'queda_rendimento_perc']].sort_values('queda_rendimento_perc', ascending=False)
+tabela_resumo = (
+    df_filtrado[['municipio', 'rendimento_kg_ha', 'reducao_chuvas_perc', 'queda_rendimento_perc']]
+    .sort_values('queda_rendimento_perc', ascending=False)
+)
 st.dataframe(tabela_resumo, use_container_width=True)
 
-# =======================
-# CORRELAÇÃO RÁPIDA
-# =======================
 st.markdown("#### 🔍 Correlação entre Redução de Chuvas e Queda de Rendimento")
 correlacao = df_filtrado[['reducao_chuvas_perc', 'queda_rendimento_perc']].corr().iloc[0,1]
 st.metric("Correlação (ρ)", f"{correlacao:.2f}")
+
+st.markdown("### 📈 Comparativo: Produtividade vs Redução de Chuvas e Queda de Rendimento")
+
+df_media = (
+    df_filtrado.groupby('municipio')[['rendimento_kg_ha', 'reducao_chuvas_perc', 'queda_rendimento_perc']]
+    .mean()
+    .reset_index()
+    .sort_values('rendimento_kg_ha', ascending=False)
+)
+
+
+fig_barras = px.bar(
+    df_media.melt(id_vars='municipio', 
+                  value_vars=['rendimento_kg_ha', 'reducao_chuvas_perc', 'queda_rendimento_perc'],
+                  var_name='Indicador', value_name='Valor'),
+    x='municipio',
+    y='Valor',
+    color='Indicador',
+    barmode='group',
+    height=500,
+    title='Produtividade (kg/ha) vs Redução de Chuvas (%) e Queda de Rendimento (%)'
+)
+
+fig_barras.update_layout(
+    xaxis_title='Município',
+    yaxis_title='Valor Médio',
+    xaxis_tickangle=-45,
+    legend_title_text='Indicador',
+    margin={'r':0,'t':50,'l':0,'b':0}
+)
+
+st.plotly_chart(fig_barras, use_container_width=True)
+
+st.markdown("---")
+st.caption("Desenvolvido por Cleverson Moura Andrade — Projeto GeoAgro Risco Soja PR 🌾")
