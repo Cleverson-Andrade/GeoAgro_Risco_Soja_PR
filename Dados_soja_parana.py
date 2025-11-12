@@ -7,10 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1ztFSIxsgQsK0z0Q9nwetUg5RzxiVLvwD
 """
 
-!pip install streamlit --quiet
-!npm install localtunnel --global --silent
-!pip install openpyxl --quiet
-
 import pandas as pd
 import streamlit as st
 import os
