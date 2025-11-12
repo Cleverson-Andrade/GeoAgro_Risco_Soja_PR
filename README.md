@@ -9,7 +9,7 @@ O objetivo é oferecer um dashboard interativo que facilite a identificação de
 ## 🚀 Dashboard Interativo
 O projeto está totalmente funcional e disponível publicamente para exploração:
 
-**[CARREGANDO]**
+**(https://geoagroriscosojapr-dbi2ch2yrac2ftm9hy9ewo.streamlit.app/)**
 
 ---
 
