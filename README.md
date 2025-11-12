@@ -49,7 +49,14 @@ O repositório foi organizado em duas versões complementares, adequadas para di
 
 - **requirements.txt**  
   Arquivo de dependências necessárias para execução local do projeto.
-
+  
 ---
-   ```bash
-   git clone https://github.com/seuusuario/GeoAgro_Risco_Soja_PR.git
+## 🚀 Executando o Dashboard Online
+
+Clique abaixo para acessar a versão interativa do painel no Streamlit 👇
+
+🔗 [Acessar Dashboard no Streamlit] (https://geoagroriscosojapr-dbi2ch2yrac2ftm9hy9ewo.streamlit.app/)
+
+
+
+
