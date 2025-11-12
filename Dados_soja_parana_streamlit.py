@@ -9,16 +9,19 @@ Original file is located at
 
 import pandas as pd
 import streamlit as st
-import os
-import numpy as np
 import plotly.express as px
 
-df = pd.read_csv('dados.csv')
+# =======================
+# CONFIGURAÇÃO INICIAL
+# =======================
+st.set_page_config(layout="wide", page_title="GeoAgro - Risco Soja PR", page_icon="🗺️")
 
-df.info()
+# =======================
+# LEITURA DOS DADOS
+# =======================
+df = pd.read_csv("dados.csv")
 
-st.dataframe(df.head())
-
+# Padroniza nomes de colunas
 colunas_novas = {
     'Safra': 'safra',
     'Regiao': 'regiao',
@@ -30,44 +33,25 @@ colunas_novas = {
     'Reduçao-chuvas (%)': 'reducao_chuvas_perc',
     'Queda Rendimento 18-19': 'queda_rendimento_perc'
 }
-
 df.rename(columns=colunas_novas, inplace=True)
 
-st.write("Colunas do DataFrame:", df.columns.tolist())
-
-st.dataframe(df.head())
-
+# =======================
+# CLASSIFICAÇÃO GEOGRÁFICA
+# =======================
 def classificar_regiao(latitude):
-  if latitude>= -24:
-    return 'Norte_Parana'
-  elif latitude < -24 and latitude >= -25.5:
-    return 'Centro_Parana'
-  else:
-    return 'Sul_Parana'
+    if latitude >= -24:
+        return 'Norte_Parana'
+    elif latitude < -24 and latitude >= -25.5:
+        return 'Centro_Parana'
+    else:
+        return 'Sul_Parana'
 
 df['regiao_geo'] = df['latitude'].apply(classificar_regiao)
 
-print("\n Distribuição da Nova Coluna 'regiao_geo' \n")
-df_distribuicao = df['regiao_geo'].value_counts().to_frame().rename_axis('Regiao Geográfica').reset_index()
-df_distribuicao.columns = ['Regiao Geográfica', 'N° de Observações']
-st.dataframe(df_distribuicao.style.set_properties(**{'text-align': 'center'}))
-
-colunas_chave = ['rendimento_kg_ha', 'reducao_chuvas_perc', 'queda_rendimento_perc', 'altitude']
-
-print("\n Estatística Descritivas das Variáveis Chave' \n")
-format_dict = {
-    'reducao_chuvas_perc': '{:.2f}%',
-    'queda_rendimento_perc': '{:.2f}%',
-    'rendimento_kg_ha': '{:.2f}',
-    'altitude': '{:.0f}'
-}
-st.dataframe(df[colunas_chave].describe().style.format(format_dict).set_properties(**{'text-align': 'center'}))
-
-print('\n Análise de Correlação (Fator Crítico vs. Queda de Rendimento) \n')
-correlacao = df[['reducao_chuvas_perc', 'queda_rendimento_perc']].corr()
-st.dataframe(correlacao.style.format('{:.3f}').set_properties(**{'text-align': 'center'}))
-
-st.subheader("Mapa Interativo: Queda de Rendimento por Localização")
+# =======================
+# TÍTULO E MAPA INTERATIVO
+# =======================
+st.markdown("## 🗺️ Mapa Interativo: Queda de Rendimento da Soja no Paraná")
 
 fig = px.scatter_mapbox(
     df,
@@ -79,16 +63,14 @@ fig = px.scatter_mapbox(
     hover_data={
         'rendimento_kg_ha': ':.2f} kg/ha',
         'queda_rendimento_perc': ':.2f}%',
-        'reducao_chuvas_perc': ':.2f}%',
-        'latitude': False,
-        'longitude': False
+        'reducao_chuvas_perc': ':.2f}%'
     },
-    title='Impacto da seca (Queda de Rendimento %) em Cultivo de Soja (Paraná)',
     color_continuous_scale=px.colors.sequential.Reds,
     zoom=6.5,
-    height=600
-    )
-fig.update_layout(mapbox_style='open-street-map')
-fig.update_layout(margin={'r':0, 't':50, 'l':0, 'b':0})
+    height=750
+)
+fig.update_layout(mapbox_style='open-street-map', margin={'r':0, 't':0, 'l':0, 'b':0})
+
 st.plotly_chart(fig, use_container_width=True)
+
 
