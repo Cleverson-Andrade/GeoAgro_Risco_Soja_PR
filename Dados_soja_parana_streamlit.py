@@ -14,14 +14,13 @@ import plotly.express as px
 # =======================
 # CONFIGURAÇÃO INICIAL
 # =======================
-st.set_page_config(layout="wide", page_title="GeoAgro - Risco Soja PR", page_icon="🗺️")
+st.set_page_config(layout="wide", page_title="GeoAgro - Dashboard Interativo", page_icon="🌾")
 
 # =======================
 # LEITURA DOS DADOS
 # =======================
 df = pd.read_csv("dados.csv")
 
-# Padroniza nomes de colunas
 colunas_novas = {
     'Safra': 'safra',
     'Regiao': 'regiao',
@@ -35,9 +34,6 @@ colunas_novas = {
 }
 df.rename(columns=colunas_novas, inplace=True)
 
-# =======================
-# CLASSIFICAÇÃO GEOGRÁFICA
-# =======================
 def classificar_regiao(latitude):
     if latitude >= -24:
         return 'Norte_Parana'
@@ -49,12 +45,23 @@ def classificar_regiao(latitude):
 df['regiao_geo'] = df['latitude'].apply(classificar_regiao)
 
 # =======================
-# TÍTULO E MAPA INTERATIVO
+# LAYOUT E FILTROS
 # =======================
-st.markdown("## 🗺️ Mapa Interativo: Queda de Rendimento da Soja no Paraná")
+st.title("🌾 GeoAgro Dashboard - Análise de Risco Climático da Soja no Paraná")
 
+st.sidebar.header("🎯 Filtros de Visualização")
+regioes = sorted(df['regiao_geo'].unique())
+regiao_selecionada = st.sidebar.selectbox("Selecione uma Região:", regioes)
+
+df_filtrado = df[df['regiao_geo'] == regiao_selecionada]
+
+st.markdown(f"### Região Selecionada: **{regiao_selecionada}**")
+
+# =======================
+# MAPA INTERATIVO
+# =======================
 fig = px.scatter_mapbox(
-    df,
+    df_filtrado,
     lat='latitude',
     lon='longitude',
     color='queda_rendimento_perc',
@@ -66,11 +73,22 @@ fig = px.scatter_mapbox(
         'reducao_chuvas_perc': ':.2f}%'
     },
     color_continuous_scale=px.colors.sequential.Reds,
-    zoom=6.5,
-    height=750
+    zoom=6,
+    height=600
 )
-fig.update_layout(mapbox_style='open-street-map', margin={'r':0, 't':0, 'l':0, 'b':0})
-
+fig.update_layout(mapbox_style='open-street-map', margin={'r':0,'t':0,'l':0,'b':0})
 st.plotly_chart(fig, use_container_width=True)
 
+# =======================
+# TABELA RESUMIDA
+# =======================
+st.markdown("#### 📊 Ranking dos Municípios - Queda de Rendimento (%)")
+tabela_resumo = df_filtrado[['municipio', 'rendimento_kg_ha', 'queda_rendimento_perc']].sort_values('queda_rendimento_perc', ascending=False)
+st.dataframe(tabela_resumo, use_container_width=True)
 
+# =======================
+# CORRELAÇÃO RÁPIDA
+# =======================
+st.markdown("#### 🔍 Correlação entre Redução de Chuvas e Queda de Rendimento")
+correlacao = df_filtrado[['reducao_chuvas_perc', 'queda_rendimento_perc']].corr().iloc[0,1]
+st.metric("Correlação (ρ)", f"{correlacao:.2f}")
