@@ -36,7 +36,7 @@ Este projeto realiza uma análise crítica de geolocalização de risco, correla
 O projeto está disponível publicamente:
 🔗 **[Acessar Dashboard no Streamlit](https://geoagroriscosojapr-dbi2ch2yrac2ftm9hy9ewo.streamlit.app/)**
 
-### 📊 WHAT Foi Feito
+### 📊 O Que Foi Feito
 1. **Limpeza e ETL:** Tratamento completo dos dados brutos e padronização de colunas.
 2. **Engenharia de Atributos:** Criação da segmentação `regiao_geo` a partir de coordenadas geográficas.
 3. **Insight Principal:** Identificação de correlação forte (ρ ≈ 0.89) entre falta de chuva e queda de rendimento.
