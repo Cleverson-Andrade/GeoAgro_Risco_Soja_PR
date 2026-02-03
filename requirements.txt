@@ -1,5 +1,8 @@
+# Bibliotecas de Interface e Visualização / Interface and Visualization Libraries
 streamlit
-openpyxl
+plotly-express
+
+# Bibliotecas de Manipulação de Dados / Data Manipulation Libraries
 pandas
 numpy
-plotly-express
+openpyxl
